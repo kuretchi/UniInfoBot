@@ -108,7 +108,7 @@ namespace UniInfoBot
                             continue;
                         }
 
-                        var music = context.Musics.SingleOrDefault(x => x.MusicId == data.MusicId);
+                        var music = context.Musics.SingleOrDefault(x => x.Name == data.Name);
 
                         if (music == default(Music))
                         {
