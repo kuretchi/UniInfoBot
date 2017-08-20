@@ -39,7 +39,7 @@ namespace UniInfoBot
                     await Task.WhenAll(
                         twitterManager.Reply(status, "エラーが発生しました。"),
                         twitterManager.SendDirectMessageToDeveloper(
-                            $"Exception Throwed. \nTweet ID: {status.Id}\n{ex}"));
+                            $"Exception Thrown. \nTweet ID: {status.Id}\n{ex}"));
                     return;
                 }
 
