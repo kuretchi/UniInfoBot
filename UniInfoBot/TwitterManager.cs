@@ -100,7 +100,7 @@ namespace UniInfoBot
             => _validReplyToStr.Contains(GetWords(status).First());
 
         public string GetMusicName(Status status)
-            => GetWords(status).SkipWhile(x => !_validReplyToStr.Contains(x)).ElementAt(1);
+            => GetWords(status).SkipWhile(x => !_validReplyToStr.Contains(x)).Skip(1).Aggregate((a, s) => a + " " + s);
 
         public async Task Reply(Status status, string musicName, CalculationResult result)
         {
