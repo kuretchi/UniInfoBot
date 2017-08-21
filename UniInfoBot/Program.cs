@@ -47,10 +47,13 @@ namespace UniInfoBot
             };
 
             await Task.WhenAll(
+                twitterManager.ChangeStatus(true),
                 twitterManager.SendDirectMessageToDeveloper("Started."),
                 twitterManager.StartMonitoringTweet());
 
-            await twitterManager.SendDirectMessageToDeveloper("Exits.");
+            await Task.WhenAll(
+                twitterManager.ChangeStatus(false),
+                twitterManager.SendDirectMessageToDeveloper("Exits."));
         }
     }
 }
