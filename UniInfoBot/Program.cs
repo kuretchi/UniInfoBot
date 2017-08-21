@@ -12,11 +12,9 @@ namespace UniInfoBot
 
         public static async Task Execute()
         {
-            var twitterManager = new TwitterManager();
-            await twitterManager.SendDirectMessageToDeveloper("Started.");
-
             var musicDataManager = new MusicDataManager();
-            
+            var twitterManager = new TwitterManager();
+
             twitterManager.TweetObserved += async (status) =>
             {
                 if (!twitterManager.NeedsReply(status))
@@ -49,12 +47,10 @@ namespace UniInfoBot
             };
 
             await Task.WhenAll(
-                twitterManager.ChangeStatus(true),
+                twitterManager.SendDirectMessageToDeveloper("Started."),
                 twitterManager.StartMonitoringTweet());
 
-            await Task.WhenAll(
-                twitterManager.ChangeStatus(false),
-                twitterManager.SendDirectMessageToDeveloper("Exits."));
+            await twitterManager.SendDirectMessageToDeveloper("Exits.");
         }
     }
 }
