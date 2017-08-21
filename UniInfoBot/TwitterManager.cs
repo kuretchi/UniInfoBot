@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reactive.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
@@ -51,26 +50,50 @@ namespace UniInfoBot
 
         private void OnTweetObserved(Status status) => TweetObserved?.Invoke(status);
 
-        public async Task<Status> StartMonitoringTweet()
+        public async Task StartMonitoringTweet()
         {
-            var observable = _tokens.Streaming
-                .FilterAsObservable(track: string.Join(",", _validReplyToStr))
-                .OfType<StatusMessage>()
-                .Select(x => x.Status);
-
+            var minSucceededSpan = TimeSpan.FromSeconds(1);
             var firstRetrySpan = TimeSpan.FromSeconds(3);
             var firstRetryCount = 10;
             var secondRetrySpan = TimeSpan.FromMinutes(10);
 
-            observable
-                .Catch(observable)
-                .Catch(observable.DelaySubscription(firstRetrySpan))
-                .Retry(firstRetryCount)
-                .Catch(observable.DelaySubscription(secondRetrySpan))
-                .Repeat()
-                .Subscribe((Status status) => OnTweetObserved(status));
+            while (true)
+            {
+                for (var i = 0; i < firstRetryCount; )
+                {
+                    var startedTime = DateTime.Now;
 
-            return await observable;
+                    try
+                    {
+                        MonitorTweet();
+                    }
+                    catch
+                    {
+                        await this.ChangeStatus(false);
+                        await Task.Delay(firstRetrySpan);
+                        await this.ChangeStatus(true);
+                    }
+
+                    i = DateTime.Now - startedTime < minSucceededSpan ? i + 1 : 0;
+                }
+
+                await this.ChangeStatus(false);
+                await Task.Delay(secondRetrySpan);
+                await this.ChangeStatus(true);
+            }
+        }
+
+        private void MonitorTweet()
+        {
+            var statuses = _tokens.Streaming
+                .Filter(track: string.Join(",", _validReplyToStr))
+                .OfType<StatusMessage>()
+                .Select(x => x.Status);
+
+            foreach (var status in statuses)
+            {
+                OnTweetObserved(status);
+            }
         }
 
         public async Task ChangeStatus(bool isRunning)
