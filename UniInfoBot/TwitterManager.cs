@@ -69,16 +69,22 @@ namespace UniInfoBot
                     }
                     catch
                     {
-                        await this.ChangeStatus(false);
-                        await Task.Delay(firstRetrySpan);
+                        await Task.WhenAll(
+                            this.ChangeStatus(false),
+                            this.SendDirectMessageToDeveloper("1st Retry."),
+                            Task.Delay(firstRetrySpan));
+
                         await this.ChangeStatus(true);
                     }
 
                     i = DateTime.Now - startedTime < minSucceededSpan ? i + 1 : 0;
                 }
 
-                await this.ChangeStatus(false);
-                await Task.Delay(secondRetrySpan);
+                await Task.WhenAll(
+                    this.ChangeStatus(false),
+                    this.SendDirectMessageToDeveloper("2nd Retry."),
+                    Task.Delay(secondRetrySpan));
+
                 await this.ChangeStatus(true);
             }
         }
