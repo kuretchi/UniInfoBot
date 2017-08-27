@@ -10,8 +10,6 @@ using CoreTweet.Streaming;
 
 namespace UniInfoBot
 {
-    public delegate void TweetEventHandler(Status status);
-
     public sealed class TwitterManager
     {
         private readonly string _consumerKey, _consumerSecret, _accessToken, _accessSecret;
@@ -46,7 +44,7 @@ namespace UniInfoBot
             _validReplyToStr = new[] { $"@{_screenName.ToString()}", $".@{_screenName.ToString()}" };
         }
 
-        public event TweetEventHandler TweetObserved;
+        public event Action<Status> TweetObserved;
 
         private void OnTweetObserved(Status status) => TweetObserved?.Invoke(status);
 
