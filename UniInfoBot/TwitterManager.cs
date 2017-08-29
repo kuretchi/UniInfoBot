@@ -22,21 +22,21 @@ namespace UniInfoBot
 
         private static readonly string _underMaintenanceSuffix = "@メンテ中";
 
-        private static readonly IReadOnlyDictionary<string, Difficluty> _difficultySuffixes
-            = new Dictionary<string, Difficluty>
+        private static readonly IReadOnlyDictionary<string, Difficulty> _difficultySuffixes
+            = new Dictionary<string, Difficulty>
         {
-            { "easy", Difficluty.Easy },
-            { "緑", Difficluty.Easy },
-            { "advanced", Difficluty.Advanced },
-            { "adv", Difficluty.Advanced },
-            { "橙", Difficluty.Advanced },
-            { "expert", Difficluty.Expert },
-            { "exp", Difficluty.Expert },
-            { "ex", Difficluty.Expert },
-            { "赤", Difficluty.Expert },
-            { "master", Difficluty.Master },
-            { "mas", Difficluty.Master },
-            { "紫", Difficluty.Master },
+            { "easy", Difficulty.Easy },
+            { "緑", Difficulty.Easy },
+            { "advanced", Difficulty.Advanced },
+            { "adv", Difficulty.Advanced },
+            { "橙", Difficulty.Advanced },
+            { "expert", Difficulty.Expert },
+            { "exp", Difficulty.Expert },
+            { "ex", Difficulty.Expert },
+            { "赤", Difficulty.Expert },
+            { "master", Difficulty.Master },
+            { "mas", Difficulty.Master },
+            { "紫", Difficulty.Master },
         };
 
         public TwitterManager()
@@ -143,25 +143,25 @@ namespace UniInfoBot
         public bool NeedsReply(Status status)
             => _validReplyToStr.Contains(GetWords(status.Text).First());
 
-        public (string Name, Difficluty Difficluty) ParseRequest(Status status)
+        public (string Name, Difficulty Difficulty) ParseRequest(Status status)
         {
             string name;
-            Difficluty difficluty;
+            Difficulty difficulty;
 
             var words = GetWords(status.Text).SkipWhile(x => !_validReplyToStr.Contains(x)).Skip(1);
             
             if (_difficultySuffixes.ContainsKey(words.Last()))
             {
                 name = string.Join(" ", words.Take(words.Count() - 1));
-                difficluty = _difficultySuffixes[words.Last()];
+                difficulty = _difficultySuffixes[words.Last()];
             }
             else
             {
                 name = string.Join(" ", words);
-                difficluty = Difficluty.Master;
+                difficulty = Difficulty.Master;
             }
 
-            return (name, difficluty);
+            return (name, difficulty);
         }
 
         public async Task Reply(Status status, CalculatedMusic music)

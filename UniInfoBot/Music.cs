@@ -2,7 +2,7 @@
 
 namespace UniInfoBot
 {
-    public enum Difficluty
+    public enum Difficulty
     {
         Easy, Advanced, Expert, Master
     }
@@ -13,39 +13,39 @@ namespace UniInfoBot
 
         public IEnumerable<string> Keywords { get; }
 
-        public IReadOnlyDictionary<Difficluty, string> Level { get; }
+        public IReadOnlyDictionary<Difficulty, string> Level { get; }
 
-        public IReadOnlyDictionary<Difficluty, double?> Constant { get; }
+        public IReadOnlyDictionary<Difficulty, double?> Constant { get; }
 
-        public IReadOnlyDictionary<Difficluty, int?> Notes { get; }
+        public IReadOnlyDictionary<Difficulty, int?> Notes { get; }
 
         public Music(dynamic json)
         {
             this.Name = json.Name;
             this.Keywords = json.Keywords;
 
-            this.Level = new Dictionary<Difficluty, string>
+            this.Level = new Dictionary<Difficulty, string>
             {
-                { Difficluty.Easy, json.Level.Easy },
-                { Difficluty.Advanced, json.Level.Advanced },
-                { Difficluty.Expert, json.Level.Expert },
-                { Difficluty.Master, json.Level.Master },
+                { Difficulty.Easy, json.Level.Easy },
+                { Difficulty.Advanced, json.Level.Advanced },
+                { Difficulty.Expert, json.Level.Expert },
+                { Difficulty.Master, json.Level.Master },
             };
 
-            this.Constant = new Dictionary<Difficluty, double?>
+            this.Constant = new Dictionary<Difficulty, double?>
             {
-                { Difficluty.Easy, json.Constant.Easy },
-                { Difficluty.Advanced, json.Constant.Advanced },
-                { Difficluty.Expert, json.Constant.Expert },
-                { Difficluty.Master, json.Constant.Master },
+                { Difficulty.Easy, json.Constant.Easy },
+                { Difficulty.Advanced, json.Constant.Advanced },
+                { Difficulty.Expert, json.Constant.Expert },
+                { Difficulty.Master, json.Constant.Master },
             };
 
-            this.Notes = new Dictionary<Difficluty, int?>
+            this.Notes = new Dictionary<Difficulty, int?>
             {
-                { Difficluty.Easy, json.Notes.Easy },
-                { Difficluty.Advanced, json.Notes.Advanced },
-                { Difficluty.Expert, json.Notes.Expert },
-                { Difficluty.Master, json.Notes.Master },
+                { Difficulty.Easy, json.Notes.Easy },
+                { Difficulty.Advanced, json.Notes.Advanced },
+                { Difficulty.Expert, json.Notes.Expert },
+                { Difficulty.Master, json.Notes.Master },
             };
         }
 

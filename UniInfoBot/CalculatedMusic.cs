@@ -4,13 +4,13 @@ namespace UniInfoBot
 {
     public class CalculatedMusic : Music
     {
-        public Difficluty CalculatedDifficulty { get; }
+        public Difficulty CalculatedDifficulty { get; }
 
         public IEnumerable<AcceptanceForSSS> AcceptancesForSSS { get; }
 
         public AcceptanceFor9900 AcceptanceFor9900 { get; }
 
-        public CalculatedMusic(Music music, Difficluty calculatedDifficulty,
+        public CalculatedMusic(Music music, Difficulty calculatedDifficulty,
             IEnumerable<AcceptanceForSSS> acceptancesForSSS, AcceptanceFor9900 acceptanceFor9900)
             : base(music)
         {

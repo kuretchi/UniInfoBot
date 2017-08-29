@@ -5,7 +5,7 @@ namespace UniInfoBot
 {
     public static class Calculator
     {
-        public static CalculatedMusic Calculate(Music music, Difficluty difficulty)
+        public static CalculatedMusic Calculate(Music music, Difficulty difficulty)
         {
             if (!music.Notes[difficulty].HasValue)
             {
