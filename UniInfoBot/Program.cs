@@ -22,10 +22,11 @@ namespace UniInfoBot
                     return;
                 }
 
+                var (name, difficulty) = twitterManager.ParseRequest(status);
                 Music music;
                 try
                 {
-                    music = musicDataManager.GetMusicData(twitterManager.GetMusicName(status));
+                    music = musicDataManager.GetMusicData(name);
                 }
                 catch (NotFoundException ex)
                 {
@@ -41,9 +42,8 @@ namespace UniInfoBot
                     return;
                 }
 
-                var result = Calculator.Calculate(music.Level, music.Notes);
-
-                await twitterManager.Reply(status, music.Name, result);
+                var calculatedMusic = Calculator.Calculate(music, difficulty);
+                await twitterManager.Reply(status, calculatedMusic);
             };
 
             await Task.WhenAll(

@@ -3,52 +3,17 @@ using System.Linq;
 
 namespace UniInfoBot
 {
-    public sealed class AcceptanceForSSS
-    {
-        public int AcceptableJustice { get; }
-
-        public int AcceptableAttack { get; }
-
-        public AcceptanceForSSS(int acceptableJustice, int acceptableAttack)
-        {
-            this.AcceptableJustice = acceptableJustice;
-            this.AcceptableAttack = acceptableAttack;
-        }
-    }
-
-    public sealed class AcceptanceFor9900
-    {
-        public int AcceptableJustice { get; }
-
-        public AcceptanceFor9900(int acceptableJustice)
-        {
-            this.AcceptableJustice = acceptableJustice;
-        }
-    }
-
-    public sealed class CalculationResult
-    {
-        public double Level { get; }
-
-        public int Notes { get; }
-
-        public IEnumerable<AcceptanceForSSS> AcceptancesForSSS { get; }
-
-        public AcceptanceFor9900 AcceptanceFor9900 { get; }
-
-        public CalculationResult(double level, int notes, IEnumerable<AcceptanceForSSS> acceptancesForSSS, AcceptanceFor9900 acceptanceFor9900)
-        {
-            this.Level = level;
-            this.Notes = notes;
-            this.AcceptancesForSSS = acceptancesForSSS;
-            this.AcceptanceFor9900 = acceptanceFor9900;
-        }
-    }
-
     public static class Calculator
     {
-        public static CalculationResult Calculate(double level, int notes)
+        public static CalculatedMusic Calculate(Music music, Difficluty difficulty)
         {
+            if (!music.Notes[difficulty].HasValue)
+            {
+                return null;
+            }
+
+            var notes = music.Notes[difficulty].Value;
+
             const double justiceRate = 0.04;
 
             const double scoreMax = 1010000;
@@ -116,11 +81,11 @@ namespace UniInfoBot
                 }
             }
 
-            return new CalculationResult(level, notes,
+            return new CalculatedMusic(music, difficulty,
                 justiceCountForSSS
-                    .Zip(attackCountForSSS, (x, y) => (x, y))
-                    .Where(x => x.Item1.HasValue)
-                    .Select(x => new AcceptanceForSSS(x.Item1.Value, x.Item2)),
+                    .Zip(attackCountForSSS, (x, y) => (AcceptableJustice: x, AcceptableAttack: y))
+                    .Where(x => x.AcceptableJustice.HasValue)
+                    .Select(x => new AcceptanceForSSS(x.AcceptableJustice.Value, x.AcceptableAttack)),
                 new AcceptanceFor9900(justiceCountFor9900));
         }
     }

@@ -81,6 +81,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CalculatedMusic.cs" />
     <Compile Include="Calculator.cs" />
     <Compile Include="DynamicJson.cs" />
     <Compile Include="Music.cs" />

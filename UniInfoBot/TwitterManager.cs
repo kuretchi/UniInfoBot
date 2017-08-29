@@ -22,6 +22,23 @@ namespace UniInfoBot
 
         private static readonly string _underMaintenanceSuffix = "@メンテ中";
 
+        private static readonly IReadOnlyDictionary<string, Difficluty> _difficultySuffixes
+            = new Dictionary<string, Difficluty>
+        {
+            { "easy", Difficluty.Easy },
+            { "緑", Difficluty.Easy },
+            { "advanced", Difficluty.Advanced },
+            { "adv", Difficluty.Advanced },
+            { "橙", Difficluty.Advanced },
+            { "expert", Difficluty.Expert },
+            { "exp", Difficluty.Expert },
+            { "ex", Difficluty.Expert },
+            { "赤", Difficluty.Expert },
+            { "master", Difficluty.Master },
+            { "mas", Difficluty.Master },
+            { "紫", Difficluty.Master },
+        };
+
         public TwitterManager()
         {
             using (var fs = new FileStream("TwitterManager.config", FileMode.Open))
@@ -120,32 +137,50 @@ namespace UniInfoBot
         public async Task SendDirectMessageToDeveloper(string message)
             => await _tokens.DirectMessages.NewAsync(_developerScreenName, message).ConfigureAwait(false);
 
-        private IEnumerable<string> GetWords(Status status)
-            => status.Text.Split(new[] { " ", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
+        private IEnumerable<string> GetWords(string str)
+            => str.Split(new[] { " ", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
 
         public bool NeedsReply(Status status)
-            => _validReplyToStr.Contains(GetWords(status).First());
+            => _validReplyToStr.Contains(GetWords(status.Text).First());
 
-        public string GetMusicName(Status status)
-            => GetWords(status).SkipWhile(x => !_validReplyToStr.Contains(x)).Skip(1).Aggregate((a, s) => a + " " + s);
+        public (string Name, Difficluty Difficluty) ParseRequest(Status status)
+        {
+            string name;
+            Difficluty difficluty;
 
-        public async Task Reply(Status status, string musicName, CalculationResult result)
+            var words = GetWords(status.Text).SkipWhile(x => !_validReplyToStr.Contains(x)).Skip(1);
+            
+            if (_difficultySuffixes.ContainsKey(words.Last()))
+            {
+                name = string.Join(" ", words.Take(words.Count() - 1));
+                difficluty = _difficultySuffixes[words.Last()];
+            }
+            else
+            {
+                name = string.Join(" ", words);
+                difficluty = Difficluty.Master;
+            }
+
+            return (name, difficluty);
+        }
+
+        public async Task Reply(Status status, CalculatedMusic music)
         {
             var sb = new StringBuilder();
 
             sb.Append("@");
             sb.AppendLine(status.User.ScreenName);
             sb.Append("曲名: ");
-            sb.AppendLine(musicName);
+            sb.AppendLine(music.Name);
             sb.Append("譜面定数: ");
-            sb.AppendFormat("{0:f1}", result.Level);
+            sb.AppendFormat("{0:f1}", music.Constant[music.CalculatedDifficulty]);
             sb.AppendLine();
             sb.Append("ノーツ数: ");
-            sb.Append(result.Notes);
+            sb.Append(music.Notes[music.CalculatedDifficulty]);
             sb.AppendLine();
             sb.Append("SSS許容: ");
 
-            foreach (var (acceptance, i) in result.AcceptancesForSSS.Select((x, i) => (x, i)))
+            foreach (var (acceptance, i) in music.AcceptancesForSSS.Select((x, i) => (x, i)))
             {
                 if (i > 0)
                 {
@@ -160,7 +195,7 @@ namespace UniInfoBot
 
             sb.AppendLine();
             sb.Append("9900許容: J");
-            sb.Append(result.AcceptanceFor9900.AcceptableJustice);
+            sb.Append(music.AcceptanceFor9900.AcceptableJustice);
 
             var text = sb.ToString();
             await _tokens.Statuses.UpdateAsync(in_reply_to_status_id: status.Id, status: text);

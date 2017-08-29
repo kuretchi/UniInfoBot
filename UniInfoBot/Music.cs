@@ -7,7 +7,7 @@ namespace UniInfoBot
         Easy, Advanced, Expert, Master
     }
 
-    public sealed class Music
+    public class Music
     {
         public string Name { get; }
 
@@ -47,6 +47,15 @@ namespace UniInfoBot
                 { Difficluty.Expert, json.Notes.Expert },
                 { Difficluty.Master, json.Notes.Master },
             };
+        }
+
+        public Music(Music music)
+        {
+            this.Name = music.Name;
+            this.Keywords = music.Keywords;
+            this.Level = music.Level;
+            this.Constant = music.Constant;
+            this.Notes = music.Notes;
         }
     }
 }
