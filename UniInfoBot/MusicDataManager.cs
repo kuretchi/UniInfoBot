@@ -32,6 +32,7 @@ namespace UniInfoBot
         {
             _client = new HttpClient();
             _client.DefaultRequestHeaders.Add("User-Agent", "UniInfoBot (https://twitter.com/uni_info_bot)");
+            _musicData = new List<Music>();
             _timer = new Timer(_updateSpan.TotalMilliseconds);
             _timer.Elapsed += async (sender, e) => await UpdateMusicData();
             _locker = new object();
