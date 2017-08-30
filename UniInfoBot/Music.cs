@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace UniInfoBot
 {
@@ -22,7 +23,10 @@ namespace UniInfoBot
         public Music(dynamic json)
         {
             this.Name = json.Name;
-            this.Keywords = json.Keywords;
+
+            // DynamicJson will try to create instance of IEnumerable<string>,
+            // so cast to string[] ad hoc
+            this.Keywords = (string[])json.Keywords;
 
             this.Level = new Dictionary<Difficulty, string>
             {
@@ -42,10 +46,10 @@ namespace UniInfoBot
 
             this.Notes = new Dictionary<Difficulty, int?>
             {
-                { Difficulty.Easy, json.Notes.Easy },
-                { Difficulty.Advanced, json.Notes.Advanced },
-                { Difficulty.Expert, json.Notes.Expert },
-                { Difficulty.Master, json.Notes.Master },
+                { Difficulty.Easy, (int?)json.Notes.Easy },
+                { Difficulty.Advanced, (int?)json.Notes.Advanced },
+                { Difficulty.Expert, (int?)json.Notes.Expert },
+                { Difficulty.Master, (int?)json.Notes.Master },
             };
         }
 
