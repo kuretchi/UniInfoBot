@@ -10,7 +10,7 @@ using CoreTweet.Streaming;
 
 namespace UniInfoBot
 {
-    public sealed class TwitterManager
+    public sealed class TwitterManager : ITwitterManager
     {
         private readonly string _consumerKey, _consumerSecret, _accessToken, _accessSecret;
 

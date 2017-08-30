@@ -1,5 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using SimpleInjector;
 
 namespace UniInfoBot
 {
@@ -12,48 +12,13 @@ namespace UniInfoBot
 
         public static async Task Execute()
         {
-            var musicDataManager = new MusicDataManager();
-            var twitterManager = new TwitterManager();
+            var container = new Container();
+            container.Register<IMusicDataManger, MusicDataManager>();
+            container.Register<ITwitterManager, TwitterManager>();
+            container.Verify();
 
-            twitterManager.TweetObserved += async (status) =>
-            {
-                if (!twitterManager.NeedsReply(status))
-                {
-                    return;
-                }
-
-                var (name, difficulty) = twitterManager.ParseRequest(status);
-                Music music;
-                try
-                {
-                    music = musicDataManager.GetMusicData(name);
-                }
-                catch (NotFoundException ex)
-                {
-                    await twitterManager.Reply(status, ex);
-                    return;
-                }
-                catch (Exception ex)
-                {
-                    await Task.WhenAll(
-                        twitterManager.Reply(status, "エラーが発生しました。"),
-                        twitterManager.SendDirectMessageToDeveloper(
-                            $"Exception Thrown. \nTweet ID: {status.Id}\n{ex}"));
-                    return;
-                }
-
-                var calculatedMusic = Calculator.Calculate(music, difficulty);
-                await twitterManager.Reply(status, calculatedMusic);
-            };
-
-            await Task.WhenAll(
-                twitterManager.ChangeStatus(true),
-                twitterManager.SendDirectMessageToDeveloper("Started."),
-                twitterManager.StartMonitoringTweet());
-
-            await Task.WhenAll(
-                twitterManager.ChangeStatus(false),
-                twitterManager.SendDirectMessageToDeveloper("Exits."));
+            var worker = new Worker(container);
+            await worker.Start();
         }
     }
 }
