@@ -1,6 +1,6 @@
 ﻿namespace UniInfoBot
 {
-    interface IMusicDataManger
+    public interface IMusicDataManger
     {
         Music GetMusicData(string musicKeyword);
     }

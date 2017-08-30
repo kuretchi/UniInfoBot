@@ -4,7 +4,7 @@ using CoreTweet;
 
 namespace UniInfoBot
 {
-    interface ITwitterManager
+    public interface ITwitterManager
     {
         event Action<Status> TweetObserved;
 
