@@ -5,7 +5,7 @@ using SimpleInjector;
 
 namespace UniInfoBot
 {
-    public class Worker
+    public sealed class Worker
     {
         private IMusicDataManger _musicDataManager;
 
