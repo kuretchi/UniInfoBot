@@ -15,3 +15,8 @@
 ### [DynamicJson](https://dynamicjson.codeplex.com/)
 * **著作者** : neuecc
 * **ライセンス** : [Microsoft Public License (Ms-PL)](https://dynamicjson.codeplex.com/license)
+
+### [Simple Injector](https://github.com/simpleinjector/SimpleInjector)
+* Copyright (c) 2013 - 2017 Simple Injector Contributors
+* **ライセンス** : [The MIT License (MIT)](https://github.com/simpleinjector/SimpleInjector/blob/master/licence.txt)
+ 
