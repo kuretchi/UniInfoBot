@@ -158,7 +158,10 @@ namespace UniInfoBot
             sb.Append("@");
             sb.AppendLine(status.User.ScreenName);
             sb.Append("曲名: ");
-            sb.AppendLine(music.Name);
+            sb.Append(music.Name);
+            sb.Append(" (");
+            sb.Append(music.CalculatedDifficulty.ToString().ToUpper());
+            sb.AppendLine(")");
             sb.Append("譜面定数: ");
             sb.AppendFormat("{0:f1}", music.Constant[music.CalculatedDifficulty]);
             sb.AppendLine();
