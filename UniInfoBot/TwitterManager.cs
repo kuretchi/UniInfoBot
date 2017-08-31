@@ -164,7 +164,9 @@ namespace UniInfoBot
             sb.AppendLine(")");
             sb.Append("譜面定数: ");
             sb.AppendFormat("{0:f1}", music.Constant[music.CalculatedDifficulty]);
-            sb.AppendLine();
+            sb.Append(" (");
+            sb.Append(music.Level[music.CalculatedDifficulty]);
+            sb.AppendLine(")");
             sb.Append("ノーツ数: ");
             sb.Append(music.Notes[music.CalculatedDifficulty]);
             sb.AppendLine();
