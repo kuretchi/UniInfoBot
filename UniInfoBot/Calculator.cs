@@ -9,7 +9,7 @@ namespace UniInfoBot
         {
             if (!music.Notes[difficulty].HasValue)
             {
-                return null;
+                return new CalculatedMusic(music, difficulty, null, null);
             }
 
             var notes = music.Notes[difficulty].Value;

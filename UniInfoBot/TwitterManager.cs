@@ -175,24 +175,27 @@ namespace UniInfoBot
             var notes = music.Notes[music.CalculatedDifficulty];
             sb.AppendLine(notes.HasValue ? notes.ToString() : "未調査");
 
-            sb.Append("SSS許容: ");
-
-            foreach (var (acceptance, i) in music.AcceptancesForSSS.Select((x, i) => (x, i)))
+            if (music.AcceptancesForSSS != null)
             {
-                if (i > 0)
+                sb.Append("SSS許容: ");
+
+                foreach (var (acceptance, i) in music.AcceptancesForSSS.Select((x, i) => (x, i)))
                 {
-                    sb.Append(", ");
+                    if (i > 0)
+                    {
+                        sb.Append(", ");
+                    }
+
+                    sb.Append("J");
+                    sb.Append(acceptance.AcceptableJustice);
+                    sb.Append(" A");
+                    sb.Append(acceptance.AcceptableAttack);
                 }
 
-                sb.Append("J");
-                sb.Append(acceptance.AcceptableJustice);
-                sb.Append(" A");
-                sb.Append(acceptance.AcceptableAttack);
+                sb.AppendLine();
+                sb.Append("9900許容: J");
+                sb.Append(music.AcceptanceFor9900.AcceptableJustice);
             }
-
-            sb.AppendLine();
-            sb.Append("9900許容: J");
-            sb.Append(music.AcceptanceFor9900.AcceptableJustice);
 
             var text = sb.ToString();
             await _twitter.Tweet(text, status.Id);
