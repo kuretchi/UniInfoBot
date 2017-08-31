@@ -167,7 +167,7 @@ namespace UniInfoBot
             sb.Append("譜面定数: ");
             var constant = music.Constant[music.CalculatedDifficulty];
             sb.Append(constant.HasValue ? constant.Value.ToString("f1") : "未調査");
-            sb.Append(" (");
+            sb.Append(" (Lv ");
             sb.Append(music.Level[music.CalculatedDifficulty]);
             sb.AppendLine(")");
 
