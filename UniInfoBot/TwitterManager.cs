@@ -6,17 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using CoreTweet;
-using CoreTweet.Streaming;
 
 namespace UniInfoBot
 {
-    public sealed class TwitterManager : ITwitterManager
+    public sealed class TwitterManager
     {
-        private readonly string _consumerKey, _consumerSecret, _accessToken, _accessSecret;
+        private ITwitter _twitter;
 
         private readonly string _screenName, _developerScreenName;
-
-        private Tokens _tokens;
 
         private IEnumerable<string> _validReplyToStr;
 
@@ -39,23 +36,18 @@ namespace UniInfoBot
             { "紫", Difficulty.Master },
         };
 
-        public TwitterManager()
+        public TwitterManager(ITwitter twitter)
         {
+            _twitter = twitter;
+
             using (var fs = new FileStream("TwitterManager.config", FileMode.Open))
             {
                 var doc = new XmlDocument();
                 doc.Load(fs);
-
-                var element = doc["root"];
-                _consumerKey = element["ConsumerKey"].InnerText;
-                _consumerSecret = element["ConsumerSecret"].InnerText;
-                _accessToken = element["AccessToken"].InnerText;
-                _accessSecret = element["AccessSecret"].InnerText;
-                _developerScreenName = element["DeveloperScreenName"].InnerText;
+                _developerScreenName = doc["root"]["DeveloperScreenName"].InnerText;
             }
 
-            _tokens = Tokens.Create(_consumerKey, _consumerSecret, _accessToken, _accessSecret);
-            _screenName = _tokens.Account.Settings().ScreenName;
+            _screenName = _twitter.GetScreenName().Result;
             
             // if _screenName == null, throws NullReferenceException
             _validReplyToStr = new[] { $"@{_screenName.ToString()}", $".@{_screenName.ToString()}" };
@@ -106,12 +98,7 @@ namespace UniInfoBot
 
         private void MonitorTweet()
         {
-            var statuses = _tokens.Streaming
-                .Filter(track: string.Join(",", _validReplyToStr))
-                .OfType<StatusMessage>()
-                .Select(x => x.Status);
-
-            foreach (var status in statuses)
+            foreach (var status in _twitter.GetTweets(_validReplyToStr.ToArray()))
             {
                 OnTweetObserved(status);
             }
@@ -119,7 +106,7 @@ namespace UniInfoBot
 
         public async Task ChangeStatus(bool isRunning)
         {
-            var name = _tokens.Account.UpdateProfileAsync().Result.Name;
+            var name = await _twitter.GetName();
 
             if (isRunning && name.EndsWith(_underMaintenanceSuffix))
             {
@@ -131,11 +118,11 @@ namespace UniInfoBot
                 name += _underMaintenanceSuffix;
             }
 
-            await _tokens.Account.UpdateProfileAsync(name: name);
+            await _twitter.SetName(name);
         }
 
         public async Task SendDirectMessageToDeveloper(string message)
-            => await _tokens.DirectMessages.NewAsync(_developerScreenName, message).ConfigureAwait(false);
+            => await _twitter.SendDirectMessage(_developerScreenName, message);
 
         private IEnumerable<string> GetWords(string str)
             => str.Split(new[] { " ", "\n", "\r" }, StringSplitOptions.RemoveEmptyEntries);
@@ -198,19 +185,19 @@ namespace UniInfoBot
             sb.Append(music.AcceptanceFor9900.AcceptableJustice);
 
             var text = sb.ToString();
-            await _tokens.Statuses.UpdateAsync(in_reply_to_status_id: status.Id, status: text);
+            await _twitter.Tweet(text, status.Id);
         }
 
         public async Task Reply(Status status, Exception ex)
         {
             var text = $"@{status.User.ScreenName}\n{ex.Message}";
-            await _tokens.Statuses.UpdateAsync(in_reply_to_status_id: status.Id, status: text);
+            await _twitter.Tweet(text, status.Id);
         }
 
         public async Task Reply(Status status, string message)
         {
             var text = $"@{status.User.ScreenName}\n{message}";
-            await _tokens.Statuses.UpdateAsync(in_reply_to_status_id: status.Id, status: text);
+            await _twitter.Tweet(text, status.Id);
         }
     }
 }

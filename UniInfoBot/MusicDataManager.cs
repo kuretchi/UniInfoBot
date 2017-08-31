@@ -13,7 +13,7 @@ namespace UniInfoBot
         public override string Message => "曲が見つかりませんでした。";
     }
 
-    public sealed class MusicDataManager : IMusicDataManger
+    public sealed class MusicDataManager
     {
         private HttpClient _client;
         

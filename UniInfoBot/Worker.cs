@@ -7,14 +7,14 @@ namespace UniInfoBot
 {
     public sealed class Worker
     {
-        private IMusicDataManger _musicDataManager;
+        private MusicDataManager _musicDataManager;
 
-        private ITwitterManager _twitterManager;
+        private TwitterManager _twitterManager;
 
         public Worker(Container container)
         {
-            _musicDataManager = container.GetInstance<IMusicDataManger>();
-            _twitterManager = container.GetInstance<ITwitterManager>();
+            _musicDataManager = new MusicDataManager();
+            _twitterManager = new TwitterManager(container.GetInstance<ITwitter>());
 
             _twitterManager.TweetObserved += this.Work;
         }

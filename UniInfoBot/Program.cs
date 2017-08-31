@@ -13,8 +13,7 @@ namespace UniInfoBot
         public static async Task Execute()
         {
             var container = new Container();
-            container.Register<IMusicDataManger, MusicDataManager>();
-            container.Register<ITwitterManager, TwitterManager>();
+            container.Register<ITwitter, Twitter>();
             container.Verify();
 
             var worker = new Worker(container);
