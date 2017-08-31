@@ -157,19 +157,24 @@ namespace UniInfoBot
 
             sb.Append("@");
             sb.AppendLine(status.User.ScreenName);
+
             sb.Append("曲名: ");
             sb.Append(music.Name);
             sb.Append(" (");
             sb.Append(music.CalculatedDifficulty.ToString().ToUpper());
             sb.AppendLine(")");
+
             sb.Append("譜面定数: ");
-            sb.AppendFormat("{0:f1}", music.Constant[music.CalculatedDifficulty]);
+            var constant = music.Constant[music.CalculatedDifficulty];
+            sb.Append(constant.HasValue ? constant.Value.ToString("f1") : "未調査");
             sb.Append(" (");
             sb.Append(music.Level[music.CalculatedDifficulty]);
             sb.AppendLine(")");
+
             sb.Append("ノーツ数: ");
-            sb.Append(music.Notes[music.CalculatedDifficulty]);
-            sb.AppendLine();
+            var notes = music.Notes[music.CalculatedDifficulty];
+            sb.AppendLine(notes.HasValue ? notes.ToString() : "未調査");
+
             sb.Append("SSS許容: ");
 
             foreach (var (acceptance, i) in music.AcceptancesForSSS.Select((x, i) => (x, i)))
